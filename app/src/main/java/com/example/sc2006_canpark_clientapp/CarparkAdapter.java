@@ -11,8 +11,11 @@ public class CarparkAdapter extends FragmentStateAdapter {
 
     private ArrayList<Fragment> arrayList = new ArrayList<>();
 
-    public CarparkAdapter(FragmentActivity fa) {
+    public CarparkAdapter(FragmentActivity fa)
+    {
         super(fa);
+        arrayList.add(MapViewFragment.newInstance());
+        arrayList.add(ListViewFragment.newInstance());
     }
 
     @NonNull
@@ -20,9 +23,15 @@ public class CarparkAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return MapViewFragment.newInstance();
+            case 1:
+                return arrayList.get(position);
         }
         return null;
+    }
+
+    public Fragment GetItem(int index)
+    {
+        return this.arrayList.get(index);
     }
 
     @Override

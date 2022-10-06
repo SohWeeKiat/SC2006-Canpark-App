@@ -7,8 +7,10 @@
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/activity_main.xml" value="0.24547101449275363" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/activity_maps.xml" value="0.4161458333333333" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/activity_search.xml" value="0.34950248756218905" />
+        <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/carpark_result_item.xml" value="0.43333333333333335" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/content_main.xml" value="0.24547101449275363" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/fragment_first.xml" value="0.24547101449275363" />
+        <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/fragment_list_view.xml" value="0.434375" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/fragment_map_view.xml" value="0.4401041666666667" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/fragment_second.xml" value="0.24547101449275363" />
         <entry key="..\:/Projects/AndroidApp/SC2006_Canpark_ClientApp/app/src/main/res/layout/location_search_result_adapter.xml" value="0.38697916666666665" />

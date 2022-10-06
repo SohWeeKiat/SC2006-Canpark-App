@@ -1,10 +1,13 @@
 package com.example.sc2006_canpark_clientapp;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -23,6 +26,7 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -46,6 +50,7 @@ public class SearchActivity extends AppCompatActivity {
     private TextView tVEmpty;
     CancellationTokenSource cts;
     Geocoder GeoQuery = null;
+    private List<AutocompletePrediction> predictions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,28 +63,21 @@ public class SearchActivity extends AppCompatActivity {
         this.pBSearchResult = findViewById(R.id.pBSearchResult);
         this.tVEmpty = findViewById(R.id.tVEmpty);
         this.pBSearchResult.setVisibility(View.GONE);
-        /*AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
-        autocompleteFragment.setCountry("SG");
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                //txtView.setText(place.getName()+","+place.getId());
-                Log.i("myTag", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng().toString());
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.i("myTag", "An error occurred: " + status);
-            }
-        });*/
         this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
         this.tBSearchLocation.addTextChangedListener(SearchLocationWatcher);
-        this.ResultAdapter = new SearchLocationResultAdapter();
+        this.ResultAdapter = new SearchLocationResultAdapter(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (position < 0 || position > predictions.size())
+                    return;
+                UserSelectPersistence usp = new UserSelectPersistence();
+                usp.setPlaceId(predictions.get(position).getPlaceId());
+                Intent c = new Intent(view.getContext(), CarparkActivity.class);
+                c.putExtra("USER_SELECT", usp);
+                startActivity(c, null);
+                //Toast.makeText(view.getContext(), "position = " + getLayoutPosition(), Toast.LENGTH_SHORT).show();
+            }
+        });
         this.lVLocationSearchResult.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         this.lVLocationSearchResult.setAdapter(this.ResultAdapter);
     }
@@ -107,9 +105,9 @@ public class SearchActivity extends AppCompatActivity {
             tVEmpty.setVisibility(View.GONE);
             placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
                 Log.i("myTag","GOT RESULT " + response.getAutocompletePredictions().size());
-                List<AutocompletePrediction> result = response.getAutocompletePredictions();
-                tVEmpty.setVisibility(result.size() <= 0 ? View.VISIBLE : View.GONE);
-                ResultAdapter.SetResult(result);
+                predictions = response.getAutocompletePredictions();
+                tVEmpty.setVisibility(predictions.size() <= 0 ? View.VISIBLE : View.GONE);
+                ResultAdapter.SetResult(predictions);
                 ResultAdapter.notifyDataSetChanged();
                 pBSearchResult.setVisibility(View.GONE);
             }).addOnFailureListener((Exception exception) ->{

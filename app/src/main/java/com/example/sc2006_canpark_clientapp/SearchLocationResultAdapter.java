@@ -22,16 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchLocationResultAdapter extends RecyclerView.Adapter<SearchLocationResultAdapter.ViewHolder> {
-
+    private OnItemClickListener mOnItemClickListener;
     @NonNull
     private List<AutocompletePrediction> result = new ArrayList<>();
     private static final CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
+
+    public SearchLocationResultAdapter(OnItemClickListener onItemClickListener)
+    {
+        this.mOnItemClickListener = onItemClickListener;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.search_location_result_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, this.mOnItemClickListener);
     }
 
     @Override
@@ -55,9 +60,11 @@ public class SearchLocationResultAdapter extends RecyclerView.Adapter<SearchLoca
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView tBPlaceName;
         private final TextView tBAddress;
+        private OnItemClickListener mOnItemClickListener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, OnItemClickListener mOnItemClickListener) {
             super(view);
+            this.mOnItemClickListener = mOnItemClickListener;
             view.setOnClickListener(this);
             tBPlaceName = (TextView) view.findViewById(R.id.tBPlaceName);
             tBAddress = (TextView) view.findViewById(R.id.tBAddress);
@@ -71,11 +78,8 @@ public class SearchLocationResultAdapter extends RecyclerView.Adapter<SearchLoca
 
         @Override
         public void onClick(View view) {
-            Intent c = new Intent(view.getContext(), CarparkActivity.class);
-            startActivity(view.getContext(),c, null);
-            Toast.makeText(view.getContext(), "position = " + getLayoutPosition(), Toast.LENGTH_SHORT).show();
+            if (this.mOnItemClickListener != null)
+                this.mOnItemClickListener.onItemClick(view, getLayoutPosition());
         }
     }
-
-
 }

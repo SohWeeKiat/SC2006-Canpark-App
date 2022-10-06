@@ -21,6 +21,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +45,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private String mParam2;
     private MapView mapView;
     private GoogleMap map;
-
+    private UserSelectPersistence usp;
     public MapViewFragment() {
         // Required empty public constructor
     }
@@ -70,6 +75,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        this.usp = ((CarparkActivity)getActivity()).GetUSP();
     }
 
     @Override
@@ -77,8 +83,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map_view, container, false);
-        //mapView = v.findViewById(R.id.GMVControl);
-        //mapView.getMapAsync(this);
 
         return v;
     }
@@ -111,7 +115,29 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         map.setMyLocationEnabled(true);
-        //map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        map.setIndoorEnabled(false);
+        this.UpdateMapLoc();
+    }
+
+    public void UpdateMapLoc()
+    {
+        if (this.map == null) return;
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude()),14));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude()))      // Sets the center of the map to location user
+                .zoom(14)                   // Sets the zoom
+                .build();                   // Creates a CameraPosition from the builder
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    public void UpdateCarparkMarkers(List<Carpark> list)
+    {
+        for(Carpark c : list){
+            map.addMarker(new MarkerOptions()
+                    .title(c.getAddress())
+                    .position(new LatLng(c.getLatitude(), c.getLongitude()))
+            );
+        }
     }
 
     private ActivityResultLauncher<String> requestPermissionLauncher =

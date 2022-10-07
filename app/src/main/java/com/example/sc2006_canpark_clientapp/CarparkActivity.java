@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,6 +33,7 @@ import java.util.List;
 
 public class CarparkActivity extends AppCompatActivity implements TabLayoutMediator.TabConfigurationStrategy{
     private ViewPager2 viewPager2;
+    private ProgressBar pBCarpark;
     private UserSelectPersistence usp;
     private PlacesClient placesClient = null;
     private CarparkAdapter adapter;
@@ -44,11 +46,11 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         setContentView(R.layout.activity_carpark);
         TabLayout tabLayout = findViewById(R.id.TLCarpark);
         this.viewPager2 = findViewById(R.id.VPCarpark);
+        this.pBCarpark = findViewById(R.id.pBCarpark);
 
         this.usp = (UserSelectPersistence)getIntent().getSerializableExtra("USER_SELECT");
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
-
 
         this.adapter = new CarparkAdapter(this);
         viewPager2.setAdapter(adapter);
@@ -86,8 +88,13 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
                 MapViewFragment frag = (MapViewFragment)adapter.GetItem(0);
                 frag.UpdateCarparkMarkers(Carparks);
+
+                ListViewFragment frag2 = (ListViewFragment)adapter.GetItem(1);
+                frag2.SetCarparks(Carparks);
+
                 Log.d("myTag", response);
                 viewPager2.setVisibility(View.VISIBLE);
+                pBCarpark.setVisibility(View.GONE);
             }
         }, new Response.ErrorListener() {
             @Override

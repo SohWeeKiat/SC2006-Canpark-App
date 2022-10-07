@@ -4,11 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapViewFragment">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="TEST"
-        />
+
     <com.example.sc2006_canpark_clientapp.MapViewInScroll
         android:id="@+id/GMVControl"
         android:layout_width="match_parent"

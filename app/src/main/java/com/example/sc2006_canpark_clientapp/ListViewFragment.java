@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ListViewFragment#newInstance} factory method to
@@ -18,7 +21,7 @@ import android.view.ViewGroup;
  */
 public class ListViewFragment extends Fragment {
     private RecyclerView lVCarparkList;
-    private CarparkListAdapter adapter;
+    private CarparkListAdapter adapter = new CarparkListAdapter();
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -45,8 +48,13 @@ public class ListViewFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_list_view, container, false);
         this.lVCarparkList = (RecyclerView) v.findViewById(R.id.LVCarparkList);
         this.lVCarparkList.setLayoutManager(new LinearLayoutManager(getContext()));
-        this.adapter = new CarparkListAdapter();
         this.lVCarparkList.setAdapter(this.adapter);
         return v;
+    }
+
+    public void SetCarparks(ArrayList<Carpark> data)
+    {
+        this.adapter.setCarparks(data);
+        this.adapter.notifyDataSetChanged();
     }
 }

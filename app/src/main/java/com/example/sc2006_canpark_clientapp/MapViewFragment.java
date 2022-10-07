@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -50,15 +51,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MapView.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MapViewFragment newInstance() {
         MapViewFragment fragment = new MapViewFragment();
         Bundle args = new Bundle();
@@ -122,12 +114,18 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void UpdateMapLoc()
     {
         if (this.map == null) return;
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude()),14));
+        LatLng user_loc = new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude());
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(user_loc,16));
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude()))      // Sets the center of the map to location user
-                .zoom(14)                   // Sets the zoom
+                .target(user_loc)      // Sets the center of the map to location user
+                .zoom(16)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        map.addMarker(new MarkerOptions()
+                .title("Target")
+                .position(user_loc)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
+        );
     }
 
     public void UpdateCarparkMarkers(List<Carpark> list)

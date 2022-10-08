@@ -21,7 +21,13 @@ import java.util.ArrayList;
  */
 public class ListViewFragment extends Fragment {
     private RecyclerView lVCarparkList;
-    private CarparkListAdapter adapter = new CarparkListAdapter();
+    private CarparkListAdapter adapter = new CarparkListAdapter(new OnItemClickListener() {
+        @Override
+        public void onItemClick(View view, int position) {
+            CarparkActivity ca = (CarparkActivity)getActivity();
+            ca.OnSelection(position);
+        }
+    });
 
     public ListViewFragment() {
         // Required empty public constructor

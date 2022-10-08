@@ -15,6 +15,11 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
     private OnItemClickListener mOnItemClickListener;
     private ArrayList<Carpark> Carparks = new ArrayList<>();
 
+    public CarparkListAdapter(OnItemClickListener onItemClickListener)
+    {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

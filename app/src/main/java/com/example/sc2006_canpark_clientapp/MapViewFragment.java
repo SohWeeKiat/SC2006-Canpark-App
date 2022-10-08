@@ -24,9 +24,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,15 +37,8 @@ import java.util.List;
  */
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private static final int GPS_PERMISSION_CODE = 100;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private MapView mapView;
     private GoogleMap map;
     private UserSelectPersistence usp;
@@ -54,8 +49,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public static MapViewFragment newInstance() {
         MapViewFragment fragment = new MapViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, "");
-        args.putString(ARG_PARAM2, "");
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,10 +56,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         this.usp = ((CarparkActivity)getActivity()).GetUSP();
     }
 
@@ -109,6 +98,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         map.setMyLocationEnabled(true);
         map.setIndoorEnabled(false);
         this.UpdateMapLoc();
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                CarparkActivity cp = (CarparkActivity) getActivity();
+                cp.OnSelection((Integer) marker.getTag());
+                return false;
+            }
+        });
     }
 
     public void UpdateMapLoc()
@@ -130,11 +127,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     public void UpdateCarparkMarkers(List<Carpark> list)
     {
+        int index = 0;
         for(Carpark c : list){
-            map.addMarker(new MarkerOptions()
+            Marker m = map.addMarker(new MarkerOptions()
                     .title(c.getAddress())
                     .position(new LatLng(c.getLatitude(), c.getLongitude()))
             );
+            m.setTag(index++);
         }
     }
 

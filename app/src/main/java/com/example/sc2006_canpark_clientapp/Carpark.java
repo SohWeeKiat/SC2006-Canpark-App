@@ -9,7 +9,7 @@ public class Carpark {
     private double latitude;
     private int total_lots;
     private int lots_available;
-    private String update_datetime;
+    private LocalDateTime update_datetime;
     private double dist;
 
     public String getCar_park_no() {
@@ -32,11 +32,9 @@ public class Carpark {
         return total_lots;
     }
 
-    public int getLots_available() {
-        return lots_available;
-    }
+    public int getLots_available() { return lots_available; }
 
-    public String getUpdate_datetime() {
+    public LocalDateTime getUpdate_datetime() {
         return update_datetime;
     }
 

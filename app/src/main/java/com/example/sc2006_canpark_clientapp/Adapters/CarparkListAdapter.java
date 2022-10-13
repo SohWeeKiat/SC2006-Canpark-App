@@ -1,4 +1,4 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Adapters;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -8,6 +8,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sc2006_canpark_clientapp.Backend.Carpark;
+import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.R;
 
 import java.util.ArrayList;
 

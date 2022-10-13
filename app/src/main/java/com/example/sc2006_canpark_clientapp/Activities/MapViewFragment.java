@@ -1,4 +1,4 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -6,21 +6,21 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.sc2006_canpark_clientapp.Backend.Carpark;
+import com.example.sc2006_canpark_clientapp.R;
+import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -28,7 +28,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -97,7 +96,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         }
         map.setMyLocationEnabled(true);
         map.setIndoorEnabled(false);
-        this.UpdateMapLoc();
+        this.AddMarkerAndAnimateToLocation();
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -108,7 +107,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    public void UpdateMapLoc()
+    public void AddMarkerAndAnimateToLocation()
     {
         if (this.map == null) return;
         LatLng user_loc = new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude());

@@ -2,8 +2,11 @@ package com.example.sc2006_canpark_clientapp;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 
+import com.example.sc2006_canpark_clientapp.Activities.MapViewFragment;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 
@@ -26,7 +29,6 @@ public class MapViewInScroll extends MapView {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        getParent().requestDisallowInterceptTouchEvent(true);
         return super.dispatchTouchEvent(ev);
     }
 }

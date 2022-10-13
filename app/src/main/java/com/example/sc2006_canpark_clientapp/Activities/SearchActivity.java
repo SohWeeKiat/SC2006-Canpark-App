@@ -1,14 +1,10 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Activities;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,25 +14,20 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.sc2006_canpark_clientapp.BuildConfig;
+import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.R;
+import com.example.sc2006_canpark_clientapp.Adapters.SearchLocationResultAdapter;
+import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
-import java.io.Console;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,15 +47,19 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
+
         this.tBSearchLocation = findViewById(R.id.tBSearchLocation);
         this.lVLocationSearchResult = findViewById(R.id.lVLocationSearchResult);
         this.pBSearchResult = findViewById(R.id.pBSearchResult);
         this.tVEmpty = findViewById(R.id.tVEmpty);
+
         this.pBSearchResult.setVisibility(View.GONE);
-        this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
         this.tBSearchLocation.addTextChangedListener(SearchLocationWatcher);
+
+        this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
         this.ResultAdapter = new SearchLocationResultAdapter(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

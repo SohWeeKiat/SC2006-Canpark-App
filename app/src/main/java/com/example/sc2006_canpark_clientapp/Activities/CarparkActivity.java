@@ -1,14 +1,22 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.example.sc2006_canpark_clientapp.BuildConfig;
+import com.example.sc2006_canpark_clientapp.Backend.CanparkBackendAPI;
+import com.example.sc2006_canpark_clientapp.Adapters.CarparkAdapter;
+import com.example.sc2006_canpark_clientapp.R;
+import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -41,12 +49,14 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         this.viewPager2 = findViewById(R.id.VPCarpark);
         this.pBCarpark = findViewById(R.id.pBCarpark);
 
+        this.adapter = new CarparkAdapter(this);
+        this.viewPager2.setAdapter(adapter);
+        this.viewPager2.setUserInputEnabled(false);
+
         this.usp = (UserSelectPersistence)getIntent().getSerializableExtra("USER_SELECT");
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
 
-        this.adapter = new CarparkAdapter(this);
-        viewPager2.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager2,this).attach();
         viewPager2.setVisibility(View.INVISIBLE);
         if (this.usp.getDest_latitude() == 0)
@@ -59,9 +69,15 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                usp.setDest_longitude(loc.longitude);
                GetCarparks();
                MapViewFragment frag = (MapViewFragment)adapter.GetItem(0);
-               frag.UpdateMapLoc();
+               frag.AddMarkerAndAnimateToLocation();
             });
-
+        Button bRoute = (Button)findViewById(R.id.bRoute);
+        bRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnbRouteClick(view);
+            }
+        });
     }
 
     public UserSelectPersistence GetUSP()
@@ -84,6 +100,9 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
                             viewPager2.setVisibility(View.VISIBLE);
                             pBCarpark.setVisibility(View.GONE);
+                        }else{
+                            pBCarpark.setVisibility(View.GONE);
+                            Toast.makeText(getApplicationContext(), "Failed to query webserver", Toast.LENGTH_LONG).show();
                         }
                     }
         });
@@ -93,7 +112,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     {
         Log.d("MyTag","Selected " + index);
        // this.behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
+        this.usp.setSelectedCarpark(this.api.getCarparklist().get(index));
         this.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
@@ -107,5 +126,14 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                 tab.setText("List");
                 break;
         }
+    }
+
+    public void OnbRouteClick(View v)
+    {
+
+        Toast.makeText(this, "Clicked on Button2", Toast.LENGTH_LONG).show();
+        Intent c = new Intent(getApplicationContext(), RouteActivity.class);
+        c.putExtra("USER_SELECT", this.usp);
+        startActivity(c, null);
     }
 }

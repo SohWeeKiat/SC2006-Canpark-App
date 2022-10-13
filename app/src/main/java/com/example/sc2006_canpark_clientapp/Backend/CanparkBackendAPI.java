@@ -1,4 +1,4 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Backend;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,8 +20,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CanparkBackendAPI {
     private static final String BaseURL = "https://canpark.sohkiat.xyz/API/";

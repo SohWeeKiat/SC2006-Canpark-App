@@ -1,6 +1,5 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,7 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.reflect.Array;
+import com.example.sc2006_canpark_clientapp.Adapters.CarparkListAdapter;
+import com.example.sc2006_canpark_clientapp.Backend.Carpark;
+import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.R;
+
 import java.util.ArrayList;
 
 /**

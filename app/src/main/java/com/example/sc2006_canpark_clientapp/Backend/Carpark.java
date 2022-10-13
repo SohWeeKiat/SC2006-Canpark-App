@@ -1,8 +1,9 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Backend;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Carpark {
+public class Carpark implements Serializable {
     private String car_park_no;
     private String address;
     private double longitude;

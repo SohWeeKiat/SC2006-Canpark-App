@@ -1,4 +1,4 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Backend;
 
 import com.google.android.libraries.places.api.model.Place;
 
@@ -10,6 +10,7 @@ public class UserSelectPersistence implements Serializable {
     private double dest_longitude;
     private double dest_latitude;
     private String dest_name;
+    private Carpark SelectedCarpark;
 
     public String getPlaceId(){
         return PlaceId;
@@ -41,5 +42,13 @@ public class UserSelectPersistence implements Serializable {
 
     public void setDest_name(String dest_name) {
         this.dest_name = dest_name;
+    }
+
+    public Carpark getSelectedCarpark() {
+        return SelectedCarpark;
+    }
+
+    public void setSelectedCarpark(Carpark selectedCarpark) {
+        SelectedCarpark = selectedCarpark;
     }
 }

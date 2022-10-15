@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sc2006_canpark_clientapp.BuildConfig;
@@ -25,11 +26,15 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.maps.GeolocationApi;
+
 import java.util.Arrays;
 
 public class CarparkActivity extends AppCompatActivity implements TabLayoutMediator.TabConfigurationStrategy{
     private ViewPager2 viewPager2;
     private ProgressBar pBCarpark;
+    private TextView TVDestination;
+
     private BottomSheetBehavior behavior;
     private UserSelectPersistence usp;
     private PlacesClient placesClient = null;
@@ -48,12 +53,17 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         TabLayout tabLayout = findViewById(R.id.TLCarpark);
         this.viewPager2 = findViewById(R.id.VPCarpark);
         this.pBCarpark = findViewById(R.id.pBCarpark);
+        this.TVDestination = findViewById(R.id.TVDestination);
 
         this.adapter = new CarparkAdapter(this);
         this.viewPager2.setAdapter(adapter);
         this.viewPager2.setUserInputEnabled(false);
 
-        this.usp = (UserSelectPersistence)getIntent().getSerializableExtra("USER_SELECT");
+        this.usp = (UserSelectPersistence)getIntent().getSerializableExtra(getResources().getString(R.string.user_config));
+        if (this.usp == null){
+            this.usp = (UserSelectPersistence) savedInstanceState.getSerializable(getResources().getString(R.string.user_config));
+        }
+
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
 
@@ -65,6 +75,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                     this.usp.getPlaceId(), Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG))
                     .build()).addOnSuccessListener((response) -> {
                LatLng loc = response.getPlace().getLatLng();
+               TVDestination.setText(response.getPlace().getName() + " - " + response.getPlace().getAddress());
                usp.setDest_latitude(loc.latitude);
                usp.setDest_longitude(loc.longitude);
                GetCarparks();
@@ -78,6 +89,16 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                 OnbRouteClick(view);
             }
         });
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(getResources().getString(R.string.user_config), this.usp);
+        super.onSaveInstanceState(outState);
     }
 
     public UserSelectPersistence GetUSP()
@@ -110,8 +131,6 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
     public void OnSelection(int index)
     {
-        Log.d("MyTag","Selected " + index);
-       // this.behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         this.usp.setSelectedCarpark(this.api.getCarparklist().get(index));
         this.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
@@ -130,10 +149,8 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
     public void OnbRouteClick(View v)
     {
-
-        Toast.makeText(this, "Clicked on Button2", Toast.LENGTH_LONG).show();
         Intent c = new Intent(getApplicationContext(), RouteActivity.class);
-        c.putExtra("USER_SELECT", this.usp);
+        c.putExtra(getResources().getString(R.string.user_config), this.usp);
         startActivity(c, null);
     }
 }

@@ -24,14 +24,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SC2006_Canpark_ClientApp"
         tools:targetApi="31">
-        <activity
-            android:name=".Activities.RouteActivity"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
+        <activity
+            android:name=".Activities.RouteActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.CarparkActivity"
             android:exported="false" />

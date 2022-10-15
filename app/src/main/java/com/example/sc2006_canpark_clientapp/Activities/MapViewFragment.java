@@ -100,6 +100,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                if (marker.getTag() == null){
+                    marker.showInfoWindow();
+                    return true;
+                }
                 CarparkActivity cp = (CarparkActivity) getActivity();
                 cp.OnSelection((Integer) marker.getTag());
                 return false;
@@ -110,16 +114,17 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void AddMarkerAndAnimateToLocation()
     {
         if (this.map == null) return;
-        LatLng user_loc = new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude());
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(user_loc,16));
+        else if (this.usp == null) return;
+        LatLng dest_loc = new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude());
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(dest_loc,16));
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(user_loc)      // Sets the center of the map to location user
+                .target(dest_loc)      // Sets the center of the map to location user
                 .zoom(16)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         map.addMarker(new MarkerOptions()
                 .title("Target")
-                .position(user_loc)
+                .position(dest_loc)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin))
         );
     }
@@ -131,8 +136,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             Marker m = map.addMarker(new MarkerOptions()
                     .title(c.getAddress())
                     .position(new LatLng(c.getLatitude(), c.getLongitude()))
+                    .snippet(c.getLots_available() + "/" + c.getTotal_lots())
             );
             m.setTag(index++);
+            m.showInfoWindow();
         }
     }
 

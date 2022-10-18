@@ -55,4 +55,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.maps:google-maps-services:2.1.0'
     implementation 'com.google.maps.android:android-maps-utils:2.3.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

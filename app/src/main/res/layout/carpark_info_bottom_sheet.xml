@@ -36,11 +36,11 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginStart="50dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/carpark_lot_background"
+            android:enabled="false"
             android:gravity="center"
             android:inputType="none"
-            android:enabled="false"
             android:maxLines="10"
             android:text="20/100\nLots\nAvailable"
             android:textAlignment="center"
@@ -53,17 +53,26 @@
             android:id="@+id/textView2"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/carpark_lot_background"
+            android:enabled="false"
             android:gravity="center"
             android:inputType="none"
-            android:enabled="false"
             android:maxLines="10"
             android:text="1 Vehicle\nLeaving\nper Minute"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart1"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:layout_constraintBottom_toTopOf="@+id/bRoute"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/bRoute"

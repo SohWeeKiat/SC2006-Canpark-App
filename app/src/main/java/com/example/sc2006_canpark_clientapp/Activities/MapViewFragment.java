@@ -140,7 +140,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                             .title(c.getAddress())
                             .position(new LatLng(c.getLatitude(), c.getLongitude()))
                             .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     );
                     m.setTag(index++);
                     m.showInfoWindow();
@@ -150,7 +150,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                             .title(c.getAddress())
                             .position(new LatLng(c.getLatitude(), c.getLongitude()))
                             .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                     );
                     m.setTag(index++);
                     m.showInfoWindow();

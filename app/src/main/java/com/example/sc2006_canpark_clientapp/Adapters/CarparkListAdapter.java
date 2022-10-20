@@ -42,9 +42,9 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
                 double percentage = (double) c.getLots_available() / c.getTotal_lots();
                 holder.getLots().setText(String.format("%d / %d", c.getLots_available(), c.getTotal_lots()));
                 if (percentage < 0.20) {
-                    holder.getLots().setTextColor(Color.GREEN);
-                } else if (percentage > 0.7) {
                     holder.getLots().setTextColor(Color.RED);
+                } else if (percentage > 0.7) {
+                    holder.getLots().setTextColor(Color.GREEN);
                 } else {
                     holder.getLots().setTextColor(Color.rgb(255, 153, 0));
                 }

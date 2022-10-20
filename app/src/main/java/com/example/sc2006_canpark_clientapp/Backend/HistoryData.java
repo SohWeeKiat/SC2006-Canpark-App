@@ -19,18 +19,6 @@ public class HistoryData implements Serializable {
         return hours;
     }
 
-    public ArrayList<Entry> GenerateEntryList(int days)
-    {
-        ArrayList<Entry> list = new ArrayList<>();
-        if (days < 0 || days > 7 || this.data == null || days > this.data.size())
-            return list;
-        List<Integer> day_data = this.data.get(days);
-        for(int hr = 0;hr < day_data.size();hr++){
-            list.add(new Entry(hr, day_data.get(hr)));
-        }
-        return list;
-    }
-
     public ArrayList<BarEntry> GenerateBarEntryList(int days)
     {
         ArrayList<BarEntry> list = new ArrayList<>();

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sheet"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
+    android:layout_height="550dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     android:background="@drawable/rounded">
 
@@ -21,7 +21,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="520dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,24 +65,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/chart1"
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart2"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="130dp"
             app:layout_constraintBottom_toTopOf="@+id/bRoute"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone"/>
-
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/chart2"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            app:layout_constraintBottom_toTopOf="@+id/bRoute"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/bRoute"

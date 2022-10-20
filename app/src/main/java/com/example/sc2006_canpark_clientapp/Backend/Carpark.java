@@ -12,6 +12,7 @@ public class Carpark implements Serializable {
     private int lots_available;
     private LocalDateTime update_datetime;
     private double dist;
+    private HistoryData history;
 
     public String getCar_park_no() {
         return car_park_no;
@@ -41,5 +42,9 @@ public class Carpark implements Serializable {
 
     public double getDist() {
         return dist;
+    }
+
+    public HistoryData getHistory() {
+        return history;
     }
 }

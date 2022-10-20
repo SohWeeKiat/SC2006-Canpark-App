@@ -1,5 +1,7 @@
 package com.example.sc2006_canpark_clientapp.Backend;
 
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -19,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class CanparkBackendAPI {
@@ -55,7 +58,11 @@ public class CanparkBackendAPI {
                         String time = json.getAsJsonPrimitive().getAsString();
                         if (time.isEmpty())
                             return LocalDateTime.MIN;
-                        return LocalDateTime.parse(time);
+                        try {
+                            return LocalDateTime.parse(time,ISO_OFFSET_DATE_TIME);
+                        }catch (DateTimeParseException e){
+                            return LocalDateTime.MIN;
+                        }
                     }
                 }).create();
                 Carparklist = gson.fromJson(response, listType);

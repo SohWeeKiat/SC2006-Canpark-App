@@ -131,15 +131,48 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     public void UpdateCarparkMarkers(List<Carpark> list)
     {
+        String color;
         int index = 0;
         for(Carpark c : list){
-            Marker m = map.addMarker(new MarkerOptions()
-                    .title(c.getAddress())
-                    .position(new LatLng(c.getLatitude(), c.getLongitude()))
-                    .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-            );
-            m.setTag(index++);
-            m.showInfoWindow();
+            if(c.getLots_available() != 0){
+                if((double)c.getLots_available()/(double)c.getTotal_lots()<=0.2) {
+                    Marker m = map.addMarker(new MarkerOptions()
+                            .title(c.getAddress())
+                            .position(new LatLng(c.getLatitude(), c.getLongitude()))
+                            .snippet(c.getLots_available() + "/" + c.getTotal_lots())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    );
+                    m.setTag(index++);
+                    m.showInfoWindow();
+                }
+                else if((double)c.getLots_available()/(double)c.getTotal_lots()>0.7){
+                    Marker m = map.addMarker(new MarkerOptions()
+                            .title(c.getAddress())
+                            .position(new LatLng(c.getLatitude(), c.getLongitude()))
+                            .snippet(c.getLots_available() + "/" + c.getTotal_lots())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                    );
+                    m.setTag(index++);
+                    m.showInfoWindow();
+                }
+                else {
+
+                        Marker m = map.addMarker(new MarkerOptions()
+                                .title(c.getAddress())
+                                .position(new LatLng(c.getLatitude(), c.getLongitude()))
+                                .snippet(c.getLots_available() + "/" + c.getTotal_lots())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                        );
+                        m.setTag(index++);
+                        m.showInfoWindow();
+
+                }
+            }
+
+
+
+
+
         }
     }
 

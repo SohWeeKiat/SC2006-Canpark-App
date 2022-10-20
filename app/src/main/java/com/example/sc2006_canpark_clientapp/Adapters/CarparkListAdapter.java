@@ -34,18 +34,21 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Carpark c = this.Carparks.get(position);
-        holder.getPlace().setText(c.getAddress());
-        holder.getDist().setText(String.format("%.2f KM",c.getDist()));
-        double percentage = (double)c.getLots_available() / c.getTotal_lots();
-        holder.getLots().setText(String.format("%d / %d",c.getLots_available(), c.getTotal_lots()));
-        if (percentage < 0.20){
-            holder.getLots().setTextColor(Color.RED);
-        }else if (percentage < 0.4){
-            holder.getLots().setTextColor(Color.rgb(255, 153,0));
-        }else {
-            holder.getLots().setTextColor(Color.GREEN);
-        }
+
+            Carpark c = this.Carparks.get(position);
+            if(c.getTotal_lots()!=0) {
+                holder.getPlace().setText(c.getAddress());
+                holder.getDist().setText(String.format("%.2f KM", c.getDist()));
+                double percentage = (double) c.getLots_available() / c.getTotal_lots();
+                holder.getLots().setText(String.format("%d / %d", c.getLots_available(), c.getTotal_lots()));
+                if (percentage < 0.20) {
+                    holder.getLots().setTextColor(Color.GREEN);
+                } else if (percentage > 0.7) {
+                    holder.getLots().setTextColor(Color.RED);
+                } else {
+                    holder.getLots().setTextColor(Color.rgb(255, 153, 0));
+                }
+            }
     }
 
     @Override

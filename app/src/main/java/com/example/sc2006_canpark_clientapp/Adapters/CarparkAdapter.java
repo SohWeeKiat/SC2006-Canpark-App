@@ -38,6 +38,6 @@ public class CarparkAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return this.arrayList.size();
     }
 }

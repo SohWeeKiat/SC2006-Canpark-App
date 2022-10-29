@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.Utils.OnItemClickListener;
 import com.example.sc2006_canpark_clientapp.R;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 

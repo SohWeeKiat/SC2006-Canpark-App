@@ -32,11 +32,10 @@
         android:background="@color/white">
 
         <EditText
-            android:id="@+id/textView"
+            android:id="@+id/TVLotsStatus"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginStart="50dp"
-            android:layout_marginTop="20dp"
             android:background="@drawable/carpark_lot_background"
             android:enabled="false"
             android:gravity="center"
@@ -44,7 +43,7 @@
             android:maxLines="10"
             android:text="20/100\nLots\nAvailable"
             android:textAlignment="center"
-            android:textColor="#FF9800"
+            android:textColor="#000000"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +52,6 @@
             android:id="@+id/textView2"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/carpark_lot_background"
             android:enabled="false"
@@ -62,19 +60,34 @@
             android:maxLines="10"
             android:text="1 Vehicle\nLeaving\nper Minute"
             android:textAlignment="center"
+            android:textColor="#000000"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/cmBDaySelection"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="105dp"
+            android:background="@color/quantum_grey"
+            android:popupBackground="@color/quantum_grey"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toTopOf="@+id/chart2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="130dp"
             app:layout_constraintBottom_toTopOf="@+id/bRoute"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/cmBDaySelection" />
 
         <Button
             android:id="@+id/bRoute"

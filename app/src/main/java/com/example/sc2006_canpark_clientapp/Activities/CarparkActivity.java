@@ -1,24 +1,35 @@
 package com.example.sc2006_canpark_clientapp.Activities;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sc2006_canpark_clientapp.Backend.Carpark;
+import com.example.sc2006_canpark_clientapp.Backend.CarparkSortType;
 import com.example.sc2006_canpark_clientapp.BuildConfig;
 import com.example.sc2006_canpark_clientapp.Backend.CanparkBackendAPI;
 import com.example.sc2006_canpark_clientapp.Adapters.CarparkAdapter;
 import com.example.sc2006_canpark_clientapp.R;
 import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
+import com.example.sc2006_canpark_clientapp.Utils.Config;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -34,6 +45,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -42,9 +54,11 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     private ProgressBar pBCarpark;
     private TextView TVDestination;
 
+    private BottomSheetBehavior behavior;
+    private TextView TVLotsStatus;
+    private Spinner cmBDaySelection;
     private BarChart barChart;
 
-    private BottomSheetBehavior behavior;
     private UserSelectPersistence usp;
     private PlacesClient placesClient = null;
     private CarparkAdapter adapter;
@@ -58,8 +72,20 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         this.behavior = BottomSheetBehavior.from(findViewById(R.id.sheet));
         this.behavior.setPeekHeight(0);
         this.behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        this.TVLotsStatus = findViewById(R.id.TVLotsStatus);
+        this.cmBDaySelection = findViewById(R.id.cmBDaySelection);
         this.barChart = findViewById(R.id.chart2);
         this.SetUpBarChart();
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item);
+        this.cmBDaySelection.setAdapter(dayAdapter);
+        dayAdapter.add("Monday");
+        dayAdapter.add("Tuesday");
+        dayAdapter.add("Wednesday");
+        dayAdapter.add("Thursday");
+        dayAdapter.add("Friday");
+        dayAdapter.add("Saturday");
+        dayAdapter.add("Sunday");
+        this.cmBDaySelection.setOnItemSelectedListener(OnDaySelectionListener);
 
         TabLayout tabLayout = findViewById(R.id.TLCarpark);
         this.viewPager2 = findViewById(R.id.VPCarpark);
@@ -74,12 +100,18 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         if (this.usp == null){
             this.usp = (UserSelectPersistence) savedInstanceState.getSerializable(getResources().getString(R.string.user_config));
         }
-
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
 
         new TabLayoutMediator(tabLayout, viewPager2,this).attach();
-        viewPager2.setVisibility(View.INVISIBLE);
+        this.viewPager2.setVisibility(View.INVISIBLE);
+        this.viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                super.onPageSelected(position);
+            }
+        });
         if (this.usp.getDest_latitude() == 0)
             this.placesClient.fetchPlace(FetchPlaceRequest
                     .builder(
@@ -100,6 +132,16 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                 OnbRouteClick(view);
             }
         });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true ) {
+            @Override
+            public void handleOnBackPressed() {
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                else
+                    finish();
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -149,7 +191,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         xAxis.setLabelCount(7);
 
         ArrayList<BarEntry> values = new ArrayList<>();
-        BarDataSet set1 = new BarDataSet(values, "The year 2017");
+        BarDataSet set1 = new BarDataSet(values, "24 Hours history");
         set1.setDrawIcons(false);
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
@@ -163,21 +205,65 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
     public void OnSelection(int index)
     {
+        Log.d("myTag", "OnSelection: " + index);
         Carpark c = this.api.getCarparklist().get(index);
         this.usp.setSelectedCarpark(c);
+        this.TVLotsStatus.setText(String.format("%d/%d\nLots\nAvailable", c.getLots_available(), c.getTotal_lots()));
+        double percentage = (double) c.getLots_available() / c.getTotal_lots();
+        Drawable bg = this.TVLotsStatus.getBackground();
+        if (bg instanceof GradientDrawable){
+            GradientDrawable gradientDrawable = (GradientDrawable)bg;
+            if (percentage <= Config.LowerPercentage)
+                gradientDrawable.setColor(Color.RED);
+            else if (percentage < Config.HigherPercentage)
+                gradientDrawable.setColor(Color.rgb(255, 153, 0));
+            else
+                gradientDrawable.setColor(Color.GREEN);
+        }
         this.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        if (c.getHistory() == null)
-            return;
-        if (barChart.getData() != null &&
-                barChart.getData().getDataSetCount() > 0) {
-            BarDataSet set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
-            set1.setValues(c.getHistory().GenerateBarEntryList(0));
+        this.SetGraphDay(0);
+    }
+
+    private void SetGraphDay(int day)
+    {
+        this.cmBDaySelection.setSelection(day);
+        Carpark c = this.usp.getSelectedCarpark();
+        if (c == null) return;
+        else if (c.getHistory() == null) return;
+        if (this.barChart.getData() != null &&
+                this.barChart.getData().getDataSetCount() > 0) {
+            BarDataSet set1 = (BarDataSet) this.barChart.getData().getDataSetByIndex(0);
+            set1.setValues(c.getHistory().GenerateBarEntryList(day));
             set1.notifyDataSetChanged();
-            barChart.getData().notifyDataChanged();
-            barChart.notifyDataSetChanged();
-            barChart.invalidate();
+            this.barChart.getData().notifyDataChanged();
+            this.barChart.notifyDataSetChanged();
+            this.barChart.invalidate();
         }
     }
+
+    public void SortCarparks(CarparkSortType type)
+    {
+        this.behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (!this.api.SortCarparks(type))
+            return;
+        MapViewFragment frag = (MapViewFragment)adapter.GetItem(0);
+        frag.UpdateCarparkMarkers(api.getCarparklist());
+
+        ListViewFragment frag2 = (ListViewFragment)adapter.GetItem(1);
+        frag2.SetCarparks(api.getCarparklist());
+    }
+
+    private final AdapterView.OnItemSelectedListener OnDaySelectionListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            SetGraphDay(i);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    };
 
     @Override
     public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {

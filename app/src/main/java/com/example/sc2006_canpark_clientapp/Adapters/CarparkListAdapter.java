@@ -10,7 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sc2006_canpark_clientapp.Backend.Carpark;
-import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.Utils.Config;
+import com.example.sc2006_canpark_clientapp.Utils.OnItemClickListener;
 import com.example.sc2006_canpark_clientapp.R;
 
 import java.util.ArrayList;
@@ -33,22 +34,25 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-            Carpark c = this.Carparks.get(position);
-            if(c.getTotal_lots()!=0) {
-                holder.getPlace().setText(c.getAddress());
-                holder.getDist().setText(String.format("%.2f KM", c.getDist()));
-                double percentage = (double) c.getLots_available() / c.getTotal_lots();
-                holder.getLots().setText(String.format("%d / %d", c.getLots_available(), c.getTotal_lots()));
-                if (percentage < 0.20) {
-                    holder.getLots().setTextColor(Color.GREEN);
-                } else if (percentage > 0.7) {
-                    holder.getLots().setTextColor(Color.RED);
-                } else {
-                    holder.getLots().setTextColor(Color.rgb(255, 153, 0));
-                }
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    {
+        Carpark c = this.Carparks.get(position);
+        holder.getPlace().setText(c.getAddress());
+        holder.getDist().setText(String.format("%.2f KM", c.getDist()));
+        if(c.getTotal_lots() != 0) {
+            double percentage = (double) c.getLots_available() / c.getTotal_lots();
+            holder.getLots().setText(String.format("%d / %d", c.getLots_available(), c.getTotal_lots()));
+            if (percentage <= Config.LowerPercentage) {
+                holder.getLots().setTextColor(Color.RED);
+            } else if (percentage > Config.HigherPercentage) {
+                holder.getLots().setTextColor(Color.GREEN);
+            } else {
+                holder.getLots().setTextColor(Color.rgb(255, 153, 0));
             }
+        }else{
+            holder.getLots().setTextColor(Color.RED);
+            holder.getLots().setText("Not Available");
+        }
     }
 
     @Override

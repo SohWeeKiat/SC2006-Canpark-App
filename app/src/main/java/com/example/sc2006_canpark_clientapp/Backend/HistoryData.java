@@ -9,14 +9,15 @@ import java.util.List;
 
 public class HistoryData implements Serializable {
     private List<List<Integer>> data;
-    private List<List<String>> hours;
+    private String start_date;
+    private String end_date;
 
     public List<List<Integer>> getData() {
         return data;
     }
 
-    public List<List<String>> getHours() {
-        return hours;
+    public String getStart_date() {
+        return start_date;
     }
 
     public ArrayList<BarEntry> GenerateBarEntryList(int days)

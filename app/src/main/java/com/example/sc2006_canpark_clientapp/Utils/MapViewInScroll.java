@@ -1,4 +1,4 @@
-package com.example.sc2006_canpark_clientapp;
+package com.example.sc2006_canpark_clientapp.Utils;
 
 import android.content.Context;
 import android.util.AttributeSet;

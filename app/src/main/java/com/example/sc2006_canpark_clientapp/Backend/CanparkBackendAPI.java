@@ -4,10 +4,18 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -23,6 +31,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class CanparkBackendAPI {
     private static final String BaseURL = "https://canpark.sohkiat.xyz/API/";
@@ -43,10 +53,48 @@ public class CanparkBackendAPI {
         return Carparklist;
     }
 
+    public boolean SortCarparks(CarparkSortType type)
+    {
+        if (this.Carparklist == null)
+            return false;
+        switch (type){
+            case SORT_TYPE_Distance:
+                Collections.sort(this.Carparklist, new Comparator<Carpark>(){
+                    @Override
+                    public int compare(Carpark l, Carpark r) {
+                        if (l.getDist() < r.getDist())
+                            return -1;
+                        else if (l.getDist() == r.getDist())
+                            return 0;
+                        else
+                            return 1;
+                    }
+                });
+                break;
+            case SORT_TYPE_Availability:
+                Collections.sort(this.Carparklist, new Comparator<Carpark>(){
+
+                    @Override
+                    public int compare(Carpark l, Carpark r) {
+                        double a1 = (double)l.getLots_available() / (double)l.getTotal_lots();
+                        double a2 = (double)r.getLots_available() / (double)r.getTotal_lots();
+                        if (a1 > a2)
+                            return -1;
+                        else if (a1 == a2)
+                            return 0;
+                        else
+                            return 1;
+                    }
+                });
+                break;
+        }
+        return true;
+    }
+
     public void GetCarparks(double longitude, double latitude, OnResultListener listener)
     {
         RequestQueue queue = Volley.newRequestQueue(this.context);
-        queue.add(new StringRequest(Request.Method.GET,  String.format(BaseURL + "GetCarparks?long=%1$s&lat=%2$s",longitude, latitude)
+        StringRequest sr = new StringRequest(Request.Method.GET,  String.format(BaseURL + "GetCarparks?long=%1$s&lat=%2$s",longitude, latitude)
                 ,new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -68,13 +116,32 @@ public class CanparkBackendAPI {
                 Carparklist = gson.fromJson(response, listType);
                 listener.OnResult(true);
             }
-            }, new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // enjoy your error status
                 listener.OnResult(false);
-                Log.d("myTag", error.getMessage());
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                    Toast.makeText(context,
+                            "Timeout from server",
+                            Toast.LENGTH_LONG).show();
+                } else if (error instanceof AuthFailureError) {
+                    //TODO
+                } else if (error instanceof ServerError) {
+                    //TODO
+                } else if (error instanceof NetworkError) {
+                    //TODO
+                } else if (error instanceof ParseError) {
+                    //TODO
+                    Log.d("myTag", "Error parsing");
+                }
+
             }
-        }));
+        });
+        sr.setRetryPolicy(new DefaultRetryPolicy(
+                20000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(sr);
     }
 }

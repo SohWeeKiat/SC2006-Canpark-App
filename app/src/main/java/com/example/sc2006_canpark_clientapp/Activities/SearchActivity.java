@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.sc2006_canpark_clientapp.BuildConfig;
-import com.example.sc2006_canpark_clientapp.OnItemClickListener;
+import com.example.sc2006_canpark_clientapp.Utils.OnItemClickListener;
 import com.example.sc2006_canpark_clientapp.R;
 import com.example.sc2006_canpark_clientapp.Adapters.SearchLocationResultAdapter;
 import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;

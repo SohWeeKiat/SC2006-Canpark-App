@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.example.sc2006_canpark_clientapp.Backend.Carpark;
 import com.example.sc2006_canpark_clientapp.R;
 import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
+import com.example.sc2006_canpark_clientapp.Utils.Config;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +43,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap map;
     private UserSelectPersistence usp;
+    private ArrayList<Marker> markers = new ArrayList<>();
+
     public MapViewFragment() {
         // Required empty public constructor
     }
@@ -131,48 +135,30 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     public void UpdateCarparkMarkers(List<Carpark> list)
     {
-        String color;
         int index = 0;
+        for(Marker m : this.markers)
+            m.remove();
+        this.markers.clear();
+
         for(Carpark c : list){
             if(c.getLots_available() != 0){
-                if((double)c.getLots_available()/(double)c.getTotal_lots()<=0.2) {
-                    Marker m = map.addMarker(new MarkerOptions()
-                            .title(c.getAddress())
-                            .position(new LatLng(c.getLatitude(), c.getLongitude()))
-                            .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                    );
-                    m.setTag(index++);
-                    m.showInfoWindow();
-                }
-                else if((double)c.getLots_available()/(double)c.getTotal_lots()>0.7){
-                    Marker m = map.addMarker(new MarkerOptions()
-                            .title(c.getAddress())
-                            .position(new LatLng(c.getLatitude(), c.getLongitude()))
-                            .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    );
-                    m.setTag(index++);
-                    m.showInfoWindow();
-                }
-                else {
+                double percentage = (double)c.getLots_available()/c.getTotal_lots();
+                float hueColor = BitmapDescriptorFactory.HUE_GREEN;
 
-                        Marker m = map.addMarker(new MarkerOptions()
-                                .title(c.getAddress())
-                                .position(new LatLng(c.getLatitude(), c.getLongitude()))
-                                .snippet(c.getLots_available() + "/" + c.getTotal_lots())
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                        );
-                        m.setTag(index++);
-                        m.showInfoWindow();
-
-                }
-            }
-
-
-
-
-
+                if(percentage <= Config.LowerPercentage)
+                    hueColor = BitmapDescriptorFactory.HUE_RED;
+                else if(percentage <= Config.HigherPercentage)
+                    hueColor = BitmapDescriptorFactory.HUE_ORANGE;
+                Marker m = map.addMarker(new MarkerOptions()
+                        .title(c.getAddress())
+                        .position(new LatLng(c.getLatitude(), c.getLongitude()))
+                        .snippet(c.getLots_available() + "/" + c.getTotal_lots())
+                        .icon(BitmapDescriptorFactory.defaultMarker(hueColor))
+                );
+                m.setTag(index++);
+                this.markers.add(m);
+            }else
+                index++;
         }
     }
 

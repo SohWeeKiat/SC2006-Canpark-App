@@ -18,7 +18,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
+    <style name="Button.White" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@android:color/white</item>
+    </style>
     <style name="Theme.SC2006_Canpark_ClientApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.SC2006_Canpark_ClientApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

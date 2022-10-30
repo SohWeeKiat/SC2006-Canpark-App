@@ -17,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -26,6 +27,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -89,6 +93,42 @@ public class CanparkBackendAPI {
                 break;
         }
         return true;
+    }
+
+    public void PostViewCarpark(String UUID, Carpark c)
+    {
+        RequestQueue queue = Volley.newRequestQueue(this.context);
+        JsonObjectRequest sr = null;
+        try {
+            sr = new JsonObjectRequest(Request.Method.POST,  BaseURL + "ViewCarpark", new JSONObject("{\"UUID\":\"" + UUID + "\", \"car_park_no\":\"" + c.getCar_park_no() + "\"}")
+                    ,new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    //Log.d("myTag", response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                        Toast.makeText(context,
+                                "Timeout from server",
+                                Toast.LENGTH_LONG).show();
+                    } else if (error instanceof AuthFailureError) {
+                        //TODO
+                    } else if (error instanceof ServerError) {
+                        //TODO
+                    } else if (error instanceof NetworkError) {
+                        //TODO
+                    } else if (error instanceof ParseError) {
+                        //TODO
+                        Log.d("myTag", "Error parsing");
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        queue.add(sr);
     }
 
     public void GetCarparks(double longitude, double latitude, OnResultListener listener)

@@ -136,7 +136,14 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) LOCATION_REFRESH_TIME,
                 (float) LOCATION_REFRESH_DISTANCE, mLocationListener);
 
-        Location location = mLocationManager.getLastKnownLocation(mLocationManager.getBestProvider(new Criteria(), true));
+        String p = mLocationManager.getBestProvider(new Criteria(), true);
+        if (p == null)
+        {
+            Toast.makeText(this, "Location services not switched on!", Toast.LENGTH_SHORT).show();
+            this.finish();
+            return;
+        }
+        Location location = mLocationManager.getLastKnownLocation(p);
         if (location != null) {
             mLocationListener.onLocationChanged(location);
         }
@@ -226,7 +233,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         this.map = googleMap;
         this.map.setMyLocationEnabled(true);
         LatLng dest_loc = new LatLng(this.usp.getDest_latitude(), this.usp.getDest_longitude());
-        this. map.animateCamera(CameraUpdateFactory.newLatLngZoom(dest_loc,16));
+        this.map.animateCamera(CameraUpdateFactory.newLatLngZoom(dest_loc,16));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(dest_loc)      // Sets the center of the map to location user
                 .zoom(16)                   // Sets the zoom

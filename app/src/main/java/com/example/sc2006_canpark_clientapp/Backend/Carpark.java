@@ -11,6 +11,9 @@ public class Carpark implements Serializable {
     private int total_lots;
     private int lots_available;
     private LocalDateTime update_datetime;
+    private String free_parking;
+    private String night_parking;
+    private int viewing_now;
     private double dist;
     private HistoryData history;
 
@@ -38,6 +41,18 @@ public class Carpark implements Serializable {
 
     public LocalDateTime getUpdate_datetime() {
         return update_datetime;
+    }
+
+    public String getFree_parking() {
+        return free_parking;
+    }
+
+    public String getNight_parking() {
+        return night_parking;
+    }
+
+    public int getViewing_now() {
+        return viewing_now;
     }
 
     public double getDist() {

@@ -16,7 +16,7 @@ import com.example.sc2006_canpark_clientapp.R;
 
 import java.util.ArrayList;
 
-public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.ViewHolder> {
+public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListViewHolder> {
     private OnItemClickListener mOnItemClickListener;
     private ArrayList<Carpark> Carparks = new ArrayList<>();
 
@@ -27,14 +27,14 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CarparkListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.carpark_result_item, parent, false);
-        return new CarparkListAdapter.ViewHolder(view, this.mOnItemClickListener);
+        return new CarparkListViewHolder(view, this.mOnItemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull CarparkListViewHolder holder, int position)
     {
         Carpark c = this.Carparks.get(position);
         holder.getPlace().setText(c.getAddress());
@@ -64,36 +64,5 @@ public class CarparkListAdapter extends RecyclerView.Adapter<CarparkListAdapter.
         this.Carparks = carparks;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView tBPlaceName;
-        private final TextView TVDistance;
-        private final TextView TVLots;
 
-        private OnItemClickListener mOnItemClickListener;
-
-        public ViewHolder(View view, OnItemClickListener mOnItemClickListener) {
-            super(view);
-            this.mOnItemClickListener = mOnItemClickListener;
-            view.setOnClickListener(this);
-            tBPlaceName = (TextView) view.findViewById(R.id.tBPlaceName);
-            TVDistance = (TextView) view.findViewById(R.id.TVDistance);
-            TVLots = (TextView) view.findViewById(R.id.TVLots);
-        }
-
-        public TextView getPlace() {
-            return tBPlaceName;
-        }
-        public TextView getDist() {
-            return TVDistance;
-        }
-        public TextView getLots() {
-            return TVLots;
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (this.mOnItemClickListener != null)
-                this.mOnItemClickListener.onItemClick(view, getLayoutPosition());
-        }
-    }
 }

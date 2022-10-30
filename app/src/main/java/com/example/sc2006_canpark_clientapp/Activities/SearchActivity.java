@@ -78,31 +78,6 @@ public class SearchActivity extends AppCompatActivity {
         FrameLayout fl = findViewById(R.id.sceneRootFrameLayout);
         welcome_scene =  Scene.getSceneForLayout(fl, R.layout.welcome_scene, this);
         search_scene =  Scene.getSceneForLayout(fl, R.layout.search_scene, this);
-
-        /*this.tBSearchLocation = findViewById(R.id.tBSearchLocation);
-        this.lVLocationSearchResult = findViewById(R.id.lVLocationSearchResult);
-        this.pBSearchResult = findViewById(R.id.pBSearchResult);
-        this.tVEmpty = findViewById(R.id.tVEmpty);
-
-        this.pBSearchResult.setVisibility(View.GONE);
-        this.tBSearchLocation.addTextChangedListener(SearchLocationWatcher);
-
-        this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
-        this.ResultAdapter = new SearchLocationResultAdapter(new OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position < 0 || position > predictions.size())
-                    return;
-                UserSelectPersistence usp = new UserSelectPersistence();
-                usp.setPlaceId(predictions.get(position).getPlaceId());
-                Intent c = new Intent(view.getContext(), CarparkActivity.class);
-                c.putExtra("USER_SELECT", usp);
-                startActivity(c, null);
-                //Toast.makeText(view.getContext(), "position = " + getLayoutPosition(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        this.lVLocationSearchResult.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        this.lVLocationSearchResult.setAdapter(this.ResultAdapter);*/
     }
 
     private void TransitToSearchScene()
@@ -177,23 +152,4 @@ public class SearchActivity extends AppCompatActivity {
             });
         }
     };
-
-    public static void setSearchViewOnClickListener(View v, View.OnClickListener listener) {
-        if (v instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup)v;
-            int count = group.getChildCount();
-            for (int i = 0; i < count; i++) {
-                View child = group.getChildAt(i);
-                if (child instanceof LinearLayout || child instanceof RelativeLayout) {
-                    setSearchViewOnClickListener(child, listener);
-                }
-
-                if (child instanceof TextView) {
-                    TextView text = (TextView)child;
-                    text.setFocusable(false);
-                }
-                child.setOnClickListener(listener);
-            }
-        }
-    }
 }

@@ -65,18 +65,105 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TableLayout
+            android:id="@+id/tableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="110dp"
+            android:stretchColumns="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:text="People viewing right now :" />
+                <TextView
+                    android:id="@+id/tVPeopleViewing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="right"
+                    android:text="10" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:text="Free parking :" />
+                <TextView
+                    android:id="@+id/tVFreeParking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="right"
+                    android:text="Yes" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:text="Night parking :" />
+
+                <TextView
+                    android:id="@+id/tVNightParking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="right"
+                    android:text="Yes" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:text="Last Updated :" />
+
+                <TextView
+                    android:id="@+id/tVLastUpdated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16dp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="right"
+                    android:text="30 / 10 / 2022" />
+            </TableRow>
+        </TableLayout>
+
         <Spinner
             android:id="@+id/cmBDaySelection"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="105dp"
+            android:layout_height="35dp"
             android:background="@color/quantum_grey"
             android:popupBackground="@color/quantum_grey"
             android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/chart2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tableLayout"
             tools:visibility="visible" />
 
         <com.github.mikephil.charting.charts.BarChart
@@ -97,6 +184,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

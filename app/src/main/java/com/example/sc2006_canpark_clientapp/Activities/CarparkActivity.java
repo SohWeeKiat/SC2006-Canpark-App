@@ -3,14 +3,16 @@ package com.example.sc2006_canpark_clientapp.Activities;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,12 +32,17 @@ import com.example.sc2006_canpark_clientapp.Adapters.CarparkAdapter;
 import com.example.sc2006_canpark_clientapp.R;
 import com.example.sc2006_canpark_clientapp.Backend.UserSelectPersistence;
 import com.example.sc2006_canpark_clientapp.Utils.Config;
+import com.example.sc2006_canpark_clientapp.Utils.GpsReceiver;
+import com.example.sc2006_canpark_clientapp.Utils.LocationCallBack;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -45,9 +52,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.lang.reflect.Array;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class CarparkActivity extends AppCompatActivity implements TabLayoutMediator.TabConfigurationStrategy{
     private ViewPager2 viewPager2;
@@ -55,7 +64,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     private TextView TVDestination;
 
     private BottomSheetBehavior behavior;
-    private TextView TVLotsStatus;
+    private TextView TVLotsStatus, TVPeopleViewingNow, TVFreeParking, TVNightParking, TVLastUpdated;
     private Spinner cmBDaySelection;
     private BarChart barChart;
 
@@ -63,6 +72,8 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     private PlacesClient placesClient = null;
     private CarparkAdapter adapter;
     private final CanparkBackendAPI api = new CanparkBackendAPI(this);
+    private GpsReceiver mLocationReceiver;
+    private String AdId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +83,10 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         this.behavior = BottomSheetBehavior.from(findViewById(R.id.sheet));
         this.behavior.setPeekHeight(0);
         this.behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        this.TVPeopleViewingNow = findViewById(R.id.tVPeopleViewing);
+        this.TVFreeParking = findViewById(R.id.tVFreeParking);
+        this.TVNightParking = findViewById(R.id.tVNightParking);
+        this.TVLastUpdated = findViewById(R.id.tVLastUpdated);
         this.TVLotsStatus = findViewById(R.id.TVLotsStatus);
         this.cmBDaySelection = findViewById(R.id.cmBDaySelection);
         this.barChart = findViewById(R.id.chart2);
@@ -142,7 +157,27 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
             }
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
+        mLocationReceiver = new GpsReceiver(new LocationCallBack() {
+            @Override
+            public void onLocationTriggered() {
+                Toast.makeText(getApplicationContext(), "Location services is not switched on, please enable it", Toast.LENGTH_LONG).show();
+                //Location state changed
+            }
+        });
+        this.registerReceiver(mLocationReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+        new GetGAIDTask().execute(this);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(mLocationReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -209,6 +244,10 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         Carpark c = this.api.getCarparklist().get(index);
         this.usp.setSelectedCarpark(c);
         this.TVLotsStatus.setText(String.format("%d/%d\nLots\nAvailable", c.getLots_available(), c.getTotal_lots()));
+        this.TVPeopleViewingNow.setText(String.format("%d",c.getViewing_now()));
+        this.TVFreeParking.setText(c.getFree_parking().toLowerCase(Locale.ROOT));
+        this.TVNightParking.setText(c.getNight_parking().toLowerCase(Locale.ROOT));
+        this.TVLastUpdated.setText(c.getUpdate_datetime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         double percentage = (double) c.getLots_available() / c.getTotal_lots();
         Drawable bg = this.TVLotsStatus.getBackground();
         if (bg instanceof GradientDrawable){
@@ -222,6 +261,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         }
         this.behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         this.SetGraphDay(0);
+        this.api.PostViewCarpark(this.AdId, c);
     }
 
     private void SetGraphDay(int day)
@@ -282,5 +322,29 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         Intent c = new Intent(getApplicationContext(), RouteActivity.class);
         c.putExtra(getResources().getString(R.string.user_config), this.usp);
         startActivity(c, null);
+    }
+
+    private class GetGAIDTask extends AsyncTask<Context, Integer, String> {
+        @Override
+        protected String doInBackground(Context... cts) {
+            AdvertisingIdClient.Info adInfo;
+            adInfo = null;
+            try {
+                adInfo = AdvertisingIdClient.getAdvertisingIdInfo(cts[0]);
+                return adInfo.getId();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            } catch (GooglePlayServicesRepairableException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            AdId = s;
+        }
     }
 }

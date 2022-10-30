@@ -7,12 +7,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.Scene;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.sc2006_canpark_clientapp.BuildConfig;
@@ -41,6 +54,9 @@ public class SearchActivity extends AppCompatActivity {
     private TextView tVEmpty;
     CancellationTokenSource cts;
     Geocoder GeoQuery = null;
+
+    private Scene welcome_scene, search_scene;
+    private Transition transition;
     private List<AutocompletePrediction> predictions;
 
     @Override
@@ -51,7 +67,19 @@ public class SearchActivity extends AppCompatActivity {
         Places.initialize(getApplicationContext(), BuildConfig.MAPS_API_KEY);
         this.placesClient = Places.createClient(this);
 
-        this.tBSearchLocation = findViewById(R.id.tBSearchLocation);
+        SearchView sv = findViewById(R.id.welcomeSearchView);
+        transition = TransitionInflater.from(this).inflateTransition(R.transition.welcome_to_search_transition);
+        sv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TransitToSearchScene();
+            }
+        });
+        FrameLayout fl = findViewById(R.id.sceneRootFrameLayout);
+        welcome_scene =  Scene.getSceneForLayout(fl, R.layout.welcome_scene, this);
+        search_scene =  Scene.getSceneForLayout(fl, R.layout.search_scene, this);
+
+        /*this.tBSearchLocation = findViewById(R.id.tBSearchLocation);
         this.lVLocationSearchResult = findViewById(R.id.lVLocationSearchResult);
         this.pBSearchResult = findViewById(R.id.pBSearchResult);
         this.tVEmpty = findViewById(R.id.tVEmpty);
@@ -59,6 +87,41 @@ public class SearchActivity extends AppCompatActivity {
         this.pBSearchResult.setVisibility(View.GONE);
         this.tBSearchLocation.addTextChangedListener(SearchLocationWatcher);
 
+        this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
+        this.ResultAdapter = new SearchLocationResultAdapter(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (position < 0 || position > predictions.size())
+                    return;
+                UserSelectPersistence usp = new UserSelectPersistence();
+                usp.setPlaceId(predictions.get(position).getPlaceId());
+                Intent c = new Intent(view.getContext(), CarparkActivity.class);
+                c.putExtra("USER_SELECT", usp);
+                startActivity(c, null);
+                //Toast.makeText(view.getContext(), "position = " + getLayoutPosition(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        this.lVLocationSearchResult.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        this.lVLocationSearchResult.setAdapter(this.ResultAdapter);*/
+    }
+
+    private void TransitToSearchScene()
+    {
+        TransitionManager.go(search_scene, transition);
+        this.tBSearchLocation = findViewById(R.id.tBSearchLocation);
+        this.lVLocationSearchResult = findViewById(R.id.lVLocationSearchResult);
+        this.pBSearchResult = findViewById(R.id.pBSearchResult);
+        this.tVEmpty = findViewById(R.id.tVEmpty);
+
+        this.pBSearchResult.setVisibility(View.GONE);
+        this.tBSearchLocation.addTextChangedListener(SearchLocationWatcher);
+        //this.tBSearchLocation.requestFocus();
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                tBSearchLocation.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0f, 0f, 0));
+                tBSearchLocation.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0f, 0f, 0));
+            }
+        }, 200);
         this.GeoQuery = new Geocoder(getApplicationContext(), Locale.getDefault());
         this.ResultAdapter = new SearchLocationResultAdapter(new OnItemClickListener() {
             @Override
@@ -114,4 +177,23 @@ public class SearchActivity extends AppCompatActivity {
             });
         }
     };
+
+    public static void setSearchViewOnClickListener(View v, View.OnClickListener listener) {
+        if (v instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup)v;
+            int count = group.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = group.getChildAt(i);
+                if (child instanceof LinearLayout || child instanceof RelativeLayout) {
+                    setSearchViewOnClickListener(child, listener);
+                }
+
+                if (child instanceof TextView) {
+                    TextView text = (TextView)child;
+                    text.setFocusable(false);
+                }
+                child.setOnClickListener(listener);
+            }
+        }
+    }
 }

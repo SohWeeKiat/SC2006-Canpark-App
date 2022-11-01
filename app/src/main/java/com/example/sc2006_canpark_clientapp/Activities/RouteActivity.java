@@ -103,6 +103,17 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     };
 
+    private final View.OnClickListener OnNavToDestClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Uri gmmIntentUri = Uri.parse("google.navigation:q=" + usp.getDest_latitude() +
+                    "," + usp.getDest_longitude() + "&mode=w");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +128,9 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         this.pBRoute = findViewById(R.id.pBRoute);
         this.bNavigate = findViewById(R.id.bNavigate);
         this.bNavigate.setOnClickListener(this.OnNavClickListener);
+        Button bNavToDest = findViewById(R.id.bNavToDest);
+        bNavToDest.setOnClickListener(this.OnNavToDestClickListener);
+
         this.usp = (UserSelectPersistence) getIntent().getSerializableExtra("USER_SELECT");
 
         this.adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_dropdown_item);

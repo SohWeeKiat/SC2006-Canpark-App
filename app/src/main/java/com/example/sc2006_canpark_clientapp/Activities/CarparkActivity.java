@@ -43,6 +43,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -139,6 +140,11 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                GetCarparks();
                MapViewFragment frag = (MapViewFragment)adapter.GetItem(0);
                frag.AddMarkerAndAnimateToLocation();
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    Toast.makeText(getApplicationContext(), "Failed to query google places", Toast.LENGTH_LONG).show();
+                }
+                finish();
             });
         Button bRoute = (Button)findViewById(R.id.bRoute);
         bRoute.setOnClickListener(new View.OnClickListener() {

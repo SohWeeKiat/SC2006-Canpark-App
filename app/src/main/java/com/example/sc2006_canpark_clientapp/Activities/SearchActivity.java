@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sc2006_canpark_clientapp.BuildConfig;
 import com.example.sc2006_canpark_clientapp.Utils.OnItemClickListener;
@@ -145,9 +146,11 @@ public class SearchActivity extends AppCompatActivity {
                 pBSearchResult.setVisibility(View.GONE);
             }).addOnFailureListener((Exception exception) ->{
                 if (exception instanceof ApiException) {
+                    Toast.makeText(getApplicationContext(), "Failed to query google places", Toast.LENGTH_SHORT).show();
                     ApiException apiException = (ApiException) exception;
                     Log.e("myTag", "Place not found: " + apiException.getStatusCode());
                 }
+                tVEmpty.setVisibility(View.VISIBLE);
                 pBSearchResult.setVisibility(View.GONE);
             });
         }

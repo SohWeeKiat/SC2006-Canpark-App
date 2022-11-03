@@ -160,6 +160,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         Location location = mLocationManager.getLastKnownLocation(p);
         if (location != null) {
             mLocationListener.onLocationChanged(location);
+        }else{
+            OnFailure();
         }
     }
 

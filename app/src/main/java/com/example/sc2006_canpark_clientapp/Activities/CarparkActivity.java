@@ -217,7 +217,8 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
                             pBCarpark.setVisibility(View.GONE);
                         }else{
                             pBCarpark.setVisibility(View.GONE);
-                            Toast.makeText(getApplicationContext(), "Failed to query webserver", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Failed to query webserver, please make sure you are connected to a wifi or cellular network.",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
         });

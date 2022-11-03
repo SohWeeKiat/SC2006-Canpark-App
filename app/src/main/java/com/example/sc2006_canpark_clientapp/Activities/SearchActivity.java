@@ -146,7 +146,7 @@ public class SearchActivity extends AppCompatActivity {
                 pBSearchResult.setVisibility(View.GONE);
             }).addOnFailureListener((Exception exception) ->{
                 if (exception instanceof ApiException) {
-                    Toast.makeText(getApplicationContext(), "Failed to query google places", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Failed to query google places, please connect to a wifi or cellular network.", Toast.LENGTH_SHORT).show();
                     ApiException apiException = (ApiException) exception;
                     Log.e("myTag", "Place not found: " + apiException.getStatusCode());
                 }

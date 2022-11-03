@@ -183,6 +183,16 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onFailure(Throwable e) {
                 Log.d("MyTag", e.toString());
+                OnFailure();
+            }
+        });
+    }
+
+    private void OnFailure()
+    {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 Toast.makeText(getApplicationContext(), "Failed to query google map api. Please connect to a wifi hotspot or cellular network.", Toast.LENGTH_SHORT).show();
                 finish();
             }

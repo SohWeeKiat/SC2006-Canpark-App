@@ -131,6 +131,15 @@ public class CanparkBackendAPI {
         queue.add(sr);
     }
 
+    public Carpark GetCarpark(String carpark_no)
+    {
+        for(Carpark c : this.Carparklist){
+            if (c.getCar_park_no().equals(carpark_no))
+                return c;
+        }
+        return null;
+    }
+
     public void GetCarparks(double longitude, double latitude, OnResultListener listener)
     {
         RequestQueue queue = Volley.newRequestQueue(this.context);

@@ -14,6 +14,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -65,7 +67,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     private TextView TVDestination;
 
     private BottomSheetBehavior behavior;
-    private TextView TVLotsStatus, TVPeopleViewingNow, TVFreeParking, TVNightParking, TVLastUpdated;
+    private TextView TVLotsStatus, TVCarMovementRate, TVPeopleViewingNow, TVFreeParking, TVNightParking, TVLastUpdated;
     private Spinner cmBDaySelection;
     private BarChart barChart;
 
@@ -76,6 +78,8 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
     private GpsReceiver mLocationReceiver;
     private String AdId;
 
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private int UPDATE_INTERVAL = 60000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +93,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         this.TVNightParking = findViewById(R.id.tVNightParking);
         this.TVLastUpdated = findViewById(R.id.tVLastUpdated);
         this.TVLotsStatus = findViewById(R.id.TVLotsStatus);
+        this.TVCarMovementRate = findViewById(R.id.TVCarMovementRate);
         this.cmBDaySelection = findViewById(R.id.cmBDaySelection);
         this.barChart = findViewById(R.id.chart2);
         this.SetUpBarChart();
@@ -172,6 +177,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         });
         this.registerReceiver(mLocationReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
         new GetGAIDTask().execute(this);
+        mStatusChecker.run();
     }
 
     @Override
@@ -184,6 +190,11 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(mStatusChecker);
+    }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -202,6 +213,7 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
     private void GetCarparks()
     {
+        if (this.usp.getDest_longitude() == 0) return;
         this.api.GetCarparks(this.usp.getDest_longitude(), this.usp.getDest_latitude(),
                 new CanparkBackendAPI.OnResultListener() {
                     @Override
@@ -215,6 +227,10 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
 
                             viewPager2.setVisibility(View.VISIBLE);
                             pBCarpark.setVisibility(View.GONE);
+
+                            if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+                                UpdateBottomSheet();
+                            }
                         }else{
                             pBCarpark.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), "Failed to query webserver, please make sure you are connected to a wifi or cellular network.",
@@ -245,12 +261,23 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         barChart.setData(data);
     }
 
+    private void UpdateBottomSheet()
+    {
+        Carpark c = this.usp.getSelectedCarpark();
+        Carpark UpdatedC = this.api.GetCarpark(c.getCar_park_no());
+        if (UpdatedC == null) return;
+        this.usp.setSelectedCarpark(UpdatedC);
+        this.TVPeopleViewingNow.setText(String.format("%d",UpdatedC.getViewing_now()));
+        this.TVLastUpdated.setText(UpdatedC.getUpdate_datetime().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+    }
+
     public void OnSelection(int index)
     {
         Log.d("myTag", "OnSelection: " + index);
         Carpark c = this.api.getCarparklist().get(index);
         this.usp.setSelectedCarpark(c);
         this.TVLotsStatus.setText(String.format("%d/%d\nLots\nAvailable", c.getLots_available(), c.getTotal_lots()));
+        this.TVCarMovementRate.setText(String.format("%d Vehicle\nLeaving\nper 30 minutes", c.getChangePer30min()));
         this.TVPeopleViewingNow.setText(String.format("%d",c.getViewing_now()));
         this.TVFreeParking.setText(c.getFree_parking().toLowerCase(Locale.ROOT));
         this.TVNightParking.setText(c.getNight_parking().toLowerCase(Locale.ROOT));
@@ -330,6 +357,19 @@ public class CarparkActivity extends AppCompatActivity implements TabLayoutMedia
         c.putExtra(getResources().getString(R.string.user_config), this.usp);
         startActivity(c, null);
     }
+
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                GetCarparks();
+            } finally {
+                // 100% guarantee that this always happens, even if
+                // your update method throws an exception
+                mHandler.postDelayed(mStatusChecker, UPDATE_INTERVAL);
+            }
+        }
+    };
 
     private class GetGAIDTask extends AsyncTask<Context, Integer, String> {
         @Override

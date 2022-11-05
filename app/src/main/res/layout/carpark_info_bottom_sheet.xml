@@ -49,7 +49,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/textView2"
+            android:id="@+id/TVCarMovementRate"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginEnd="50dp"
@@ -58,7 +58,7 @@
             android:gravity="center"
             android:inputType="none"
             android:maxLines="10"
-            android:text="1 Vehicle\nLeaving\nper Minute"
+            android:text="1 Vehicle\nLeaving\nper 30 minutes"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textStyle="bold"

@@ -16,6 +16,7 @@ public class Carpark implements Serializable {
     private int viewing_now;
     private double dist;
     private HistoryData history;
+    private int changePer30min;
 
     public String getCar_park_no() {
         return car_park_no;
@@ -61,5 +62,9 @@ public class Carpark implements Serializable {
 
     public HistoryData getHistory() {
         return history;
+    }
+
+    public int getChangePer30min() {
+        return changePer30min;
     }
 }
